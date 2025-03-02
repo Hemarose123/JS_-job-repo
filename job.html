@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Catalog</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        padding: 0;
+        text-align: center;
+        background-color: #9eebf6;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+        background: #007bff;
+        color: rgb(240, 248, 249);
+      }
+
+      button {
+        padding: 10px 15px;
+        border: none;
+        cursor: pointer;
+      }
+
+      #bookForm {
+        margin: 20px auto;
+        padding: 10px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      #bookList {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .book-card {
+        background: rgb(121, 206, 248);
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        width: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Book Catalog</h1>
+      <button id="addBookBtn">Add Book</button>
+    </header>
+
+    <div id="bookForm" class="hidden">
+      <input type="text" id="title" placeholder="Book Title" />
+      <input type="text" id="author" placeholder="Author" />
+      <input type="text" id="year" placeholder="Year" />
+      <button id="saveBookBtn">Save</button>
+    </div>
+
+    <main>
+      <div id="bookList"></div>
+    </main>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const addBookBtn = document.getElementById("addBookBtn");
+        const bookForm = document.getElementById("bookForm");
+        const saveBookBtn = document.getElementById("saveBookBtn");
+        const bookList = document.getElementById("bookList");
+
+        let books = JSON.parse(localStorage.getItem("books")) || [];
+
+        function displayBooks() {
+          bookList.innerHTML = "";
+          books.forEach((book, index) => {
+            const bookCard = document.createElement("div");
+            bookCard.classList.add("book-card");
+            bookCard.innerHTML = `
+                        <h3>${book.title}</h3>
+                        <p>Author: ${book.author}</p>
+                        <p>Year: ${book.year}</p>
+                        <button onclick="deleteBook(${index})">Delete</button>
+                    `;
+            bookList.appendChild(bookCard);
+          });
+        }
+
+        function addBook() {
+          const title = document.getElementById("title").value;
+          const author = document.getElementById("author").value;
+          const year = document.getElementById("year").value;
+
+          if (title && author && year) {
+            books.push({ title, author, year });
+            localStorage.setItem("books", JSON.stringify(books));
+            displayBooks();
+            bookForm.classList.add("hidden");
+          }
+        }
+
+        window.deleteBook = (index) => {
+          books.splice(index, 1);
+          localStorage.setItem("books", JSON.stringify(books));
+          displayBooks();
+        };
+
+        addBookBtn.addEventListener("click", () =>
+          bookForm.classList.toggle("hidden")
+        );
+        saveBookBtn.addEventListener("click", addBook);
+
+        displayBooks();
+      });
+    </script>
+  </body>
+</html>
